@@ -1,0 +1,8 @@
+version: '3'
+services:
+  gateway-db-setup:
+    image: projecteka/data-notification-db-initializer
+    environment:
+      - 'JAVA_TOOL_OPTIONS=-Djdbc.url=jdbc:postgresql://172.16.10.131:5432/data_notification_subscription -Djdbc.username=postgres -Djdbc.password=8U-BWr9Gz!276zLe'
+
+
