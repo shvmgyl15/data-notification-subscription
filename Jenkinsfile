@@ -25,8 +25,8 @@ pipeline {
  
                 stage('Deploy data-notification-subscription Application in EKS') {
                         steps {
-				sh 'kubectl apply -f consent/kubernetes/deployment.yml'
-                                sh 'kubectl apply -f consent/kubernetes/service.yml'
+				sh 'kubectl apply -f kubernetes/deployment.yml'
+                                sh 'kubectl apply -f kubernetes/service.yml'
 							
 				withCredentials([string(credentialsId: 'Registry-Name', variable: 'REGISTRY_NAME')]) {
                                         sh 'kubectl set image deployment/consent  consent=$REGISTRY_NAME"/consent-manager/data-notification-subscription:${BUILD_NUMBER}" -n consent-manager'
