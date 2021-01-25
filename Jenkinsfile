@@ -29,7 +29,7 @@ pipeline {
                                 sh 'kubectl apply -f kubernetes/service.yml'
 							
 				withCredentials([string(credentialsId: 'Registry-Name', variable: 'REGISTRY_NAME')]) {
-                                        sh 'kubectl set image deployment/consent  consent=$REGISTRY_NAME"/consent-manager/data-notification-subscription:${BUILD_NUMBER}" -n consent-manager'
+                                        sh 'kubectl set image deployment/data-notification-subscription-test  data-notification-subscription-test=$REGISTRY_NAME"/consent-manager/data-notification-subscription:${BUILD_NUMBER}" -n consent-manager'
                                 }
                         }
                         post {
