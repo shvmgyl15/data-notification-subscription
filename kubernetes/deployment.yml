@@ -1,0 +1,139 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: consent-manager
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-notification-subscription-test
+  namespace: consent-manager
+  labels:
+    app: data-notification-subscription-test
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: data-notification-subscription-test
+  template:
+    metadata:
+      labels:
+        app: data-notification-subscription-test
+    spec:
+      containers:
+        - name: data-notification-subscription-test
+          image: devinfysurveyappregistry.azurecr.io/data-notification-subscription-test:latest
+          env:
+          - name: "SERVER_PORT"
+            value: "8010"
+          # subscriptionmanager
+          - name: "DEFAULT_PAGE_SIZE"
+            value: "20"
+          - name: "MAX_PAGE_SIZE"
+            value: "100"
+          - name: "SUBSCRIPTION_REQUEST_EXPIRY"
+            value: "720"
+          # Database
+          - name: "POSTGRES_HOST"
+            value: "jdbc:postgresql://infy-survey-app.postgres.database.azure.com"
+          - name: "POSTGRES_PORT"
+            value: "5432"
+          - name: "CONSENT_MANAGER_DB_NAME"
+            value: "data_notification_subscription"
+          - name: "POSTGRES_USER"
+            value: "infysurveydev@infy-survey-app"
+          - name: "POSTGRES_PASSWORD"
+            value: "infy@123_"
+          - name: "MASTER_POOL_SIZE"
+            value: "5"
+          - name: "REPLICA_READ_ENABLED"
+            value: "false"
+          # keycloak
+          - name: "KEY_CLOAK_URL"
+            value: "http://20.40.6.45:8080/auth"
+          - name: "KEY_CLOAK_CONSENT_CLIENT_ID"
+            value: "consent-manager"
+          - name: "KEY_CLOAK_CONSENT_CLIENT_SECRET"
+            value: "27076830-b2be-44ac-ac42-ab69be47766d"
+          - name: "KEY_CLOAK_CONSENT_USER_NAME"
+            value: "consent-service-admin-user"
+          - name: "KEY_CLOAK_CONSENT_PASSWORD"
+            value: "welcome"
+          - name: "KEY_CLOAK_JWK_URL"
+            value: "http://20.40.6.45:8080/auth/realms/consent-manager/protocol/openid-connect/certs"
+          - name: "KEY_CLOAK_TOKEN_ISSUER"
+            value: "http://20.40.6.45:8080/auth/realms/consent-manager"
+          # gatewayservice
+          - name: "GATEWAY_BASE_URL"
+            value: "http://10.0.2.199:8000/v0.5"
+          - name: "GATEWAY_REQUEST_TIMEOUT"
+            value: "5000"
+          - name: "GATEWAY_CLIENT_SECRET"
+            value: "edbf171c-9b87-4a0a-9403-48c42c373735"
+          - name: "GATEWAY_CLIENT_ID"
+            value: "ncg"
+          - name: "CENTRAL_REGISTRY_JWK_URL"
+            value: "http://10.0.2.199:8000/v0.5/certs"
+          # authorization
+          - name: "AUTHORIZATION_HEADER"
+            value: "Authorization"
+          - name: "EXTERNAL_IDP_FOR_USER_AUTH"
+            value: "false"
+          # Valid values are guava(for local), redis
+          - name: "CACHE_METHOD"
+            value: "guava"
+          # Redis Config: Will not be used if cacheMethod is guava
+          - name: "REDIS_HOST"
+            value: "localhost"
+          - name: "REDIS_PORT"
+            value: "6379"
+          - name: "REDIS_PASSWORD"
+            value: "password"
+          - name: "REDIS_KEY_EXPIRY"
+            value: "5"
+          - name: "ROOT_NAMESPACE"
+            value: "gateway"
+          - name: "KEEP_ALIVE_ENABLED"
+            value: "false"
+          - name: "REDIS_RETRY"
+            value: "0"
+          # userservice
+          - name: "USER_SERVICE_URL"
+            value: "http://20.40.4.111:9000"
+          - name: "USER_ID_SUFFIX"
+            value: "@ndhm"
+          # linkservice
+          - name: "LINK_SERVICE_URL"
+            value: "http://20.40.4.111:9000"
+          # RabbitMQ
+          - name: "RABBITMQ_HOST"
+            value: "10.0.2.9"
+          - name: "RABBITMQ_PORT"
+            value: "5672"
+          - name: "RABBITMQ_USERNAME"
+            value: "guest"
+          - name: "RABBITMQ_PASSWORD"
+            value: "guest"
+          # logging
+          - name: "LOG_LEVEL"
+            value: "INFO"
+          # Web Client
+          - name: "USE_HTTP_CONNECTION_POOL"
+            value: "true"
+          # Http Connection Pool
+          - name: "HTTP_CONNECTION_POOL_SIZE"
+            value: "500"
+          - name: "HTTP_CONNECTION_MAX_LIFETIME"
+            value: "10"
+          - name: "HTTP_CONNECTION_MAX_IDLETIME"
+            value: "5"
+
+          ports:
+            - containerPort: 8010
+
