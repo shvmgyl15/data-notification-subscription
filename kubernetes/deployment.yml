@@ -56,7 +56,7 @@ spec:
             value: "false"
           # keycloak
           - name: "KEY_CLOAK_URL"
-            value: "https://13.59.3.205:8443/auth"
+            value: "https://vaccine.surveymaster.in/auth"
           - name: "KEY_CLOAK_CONSENT_CLIENT_ID"
             value: "consent-manager"
           - name: "KEY_CLOAK_CONSENT_CLIENT_SECRET"
@@ -66,9 +66,9 @@ spec:
           - name: "KEY_CLOAK_CONSENT_PASSWORD"
             value: "welcome"
           - name: "KEY_CLOAK_JWK_URL"
-            value: "https://13.59.3.205:8443/auth/realms/vaccination/protocol/openid-connect/certs"
+            value: "https://vaccine.surveymaster.in/auth/realms/vaccination/protocol/openid-connect/certs"
           - name: "KEY_CLOAK_TOKEN_ISSUER"
-            value: "https://13.59.3.205:8443/auth/realms/vaccination"
+            value: "https://vaccine.surveymaster.in/auth/realms/vaccination"
           # gatewayservice
           - name: "GATEWAY_BASE_URL"
             value: "http://aa7e8390b4a8f4363a90f79137f62c68-2022049164.us-east-2.elb.amazonaws.com:8000/v0.5"
