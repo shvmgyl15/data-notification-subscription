@@ -1,5 +1,6 @@
 package in.projecteka.datanotificationsubscription.kafkaStream.producer;
 
+import in.projecteka.consentmanager.common.TraceableMessage;
 import in.projecteka.datanotificationsubscription.kafkaStream.stream.IProducerStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ public class MessageProducer {
     @Autowired
     private IProducerStream iProducerStream;
 
-    public void produce(String message) {
+    public void produce(TraceableMessage message) {
         log.info("In produce message: {}", message);
         try {
             MessageChannel messageChannel = iProducerStream.produce();
