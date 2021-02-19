@@ -1,42 +1,22 @@
 package in.projecteka.datanotificationsubscription;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import in.projecteka.datanotificationsubscription.common.CMTokenAuthenticator;
-import in.projecteka.datanotificationsubscription.hipLink.HipLinkNotificationListener;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import in.projecteka.datanotificationsubscription.auth.ExternalIdentityProvider;
 import in.projecteka.datanotificationsubscription.auth.IDPProperties;
 import in.projecteka.datanotificationsubscription.auth.IdentityProvider;
 import in.projecteka.datanotificationsubscription.clients.IdentityServiceClient;
 import in.projecteka.datanotificationsubscription.clients.LinkServiceClient;
 import in.projecteka.datanotificationsubscription.clients.UserServiceClient;
-import in.projecteka.datanotificationsubscription.common.Authenticator;
-import in.projecteka.datanotificationsubscription.common.GatewayServiceClient;
-import in.projecteka.datanotificationsubscription.common.GatewayTokenVerifier;
-import in.projecteka.datanotificationsubscription.common.GlobalExceptionHandler;
-import in.projecteka.datanotificationsubscription.common.ExternalIDPOfflineAuthenticator;
-import in.projecteka.datanotificationsubscription.common.IdentityService;
-import in.projecteka.datanotificationsubscription.common.RequestValidator;
-import in.projecteka.datanotificationsubscription.common.ServiceAuthentication;
-import in.projecteka.datanotificationsubscription.common.ServiceAuthenticationClient;
-import in.projecteka.datanotificationsubscription.common.cache.CacheAdapter;
-import in.projecteka.datanotificationsubscription.common.cache.LoadingCacheAdapter;
-import in.projecteka.datanotificationsubscription.common.cache.LoadingCacheGenericAdapter;
-import in.projecteka.datanotificationsubscription.common.cache.RedisCacheAdapter;
-import in.projecteka.datanotificationsubscription.common.cache.RedisGenericAdapter;
-import in.projecteka.datanotificationsubscription.common.cache.RedisOptions;
-import in.projecteka.datanotificationsubscription.subscription.SubscriptionResponseMapper;
-import in.projecteka.datanotificationsubscription.subscription.SubscriptionService;
-import in.projecteka.datanotificationsubscription.subscription.SubscriptionRepository;
-import in.projecteka.datanotificationsubscription.subscription.SubscriptionRequestRepository;
-import in.projecteka.datanotificationsubscription.subscription.SubscriptionRequestService;
+import in.projecteka.datanotificationsubscription.common.*;
+import in.projecteka.datanotificationsubscription.common.cache.*;
+import in.projecteka.datanotificationsubscription.subscription.*;
 import in.projecteka.datanotificationsubscription.subscription.model.SubscriptionApprovalRequestValidator;
 import in.projecteka.datanotificationsubscription.subscription.model.SubscriptionProperties;
 import io.lettuce.core.ClientOptions;
@@ -47,8 +27,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -96,10 +74,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static in.projecteka.datanotificationsubscription.common.Constants.CM_EXCHANGE;
-import static in.projecteka.datanotificationsubscription.common.Constants.DEFAULT_CACHE_VALUE;
-import static in.projecteka.datanotificationsubscription.common.Constants.HIP_LINK_QUEUE;
+import static in.projecteka.datanotificationsubscription.common.Constants.*;
 
 @Configuration
 public class DataNotificationSubscriptionConfiguration {
@@ -113,32 +88,10 @@ public class DataNotificationSubscriptionConfiguration {
     }
 
     @Bean
-    public Jackson2JsonMessageConverter converter() {
-        var objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return new Jackson2JsonMessageConverter(objectMapper);
-    }
-
-    @Bean
-    public MessageListenerContainerFactory messageListenerContainerFactory(
-            ConnectionFactory connectionFactory,
-            Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
-        return new MessageListenerContainerFactory(connectionFactory, jackson2JsonMessageConverter);
-    }
-
-    @Bean
     public HIUSubscriptionManager subscriptionManager(SubscriptionRequestRepository subscriptionRequestRepository,
                                                       GatewayServiceClient gatewayServiceClient,
                                                       UserServiceClient userServiceClient) {
         return new HIUSubscriptionManager(subscriptionRequestRepository, gatewayServiceClient, userServiceClient);
-    }
-
-    @Bean
-    public HipLinkNotificationListener linkNotificationListener(MessageListenerContainerFactory messageListenerContainerFactory,
-                                                                Jackson2JsonMessageConverter converter,
-                                                                HIUSubscriptionManager subscriptionManager) {
-        return new HipLinkNotificationListener(messageListenerContainerFactory, converter, subscriptionManager);
     }
 
     @Bean("readWriteClient")
