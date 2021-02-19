@@ -79,11 +79,11 @@ spring:
             max.poll.interval.ms: 2400000
       bindings:
         input-binding:
-          destination: cm-hip-link-queue
+          destination: cm-hip-link-queue-01
           group: cm-hip-link-group
           contentType: application/json
         producer-binding:
-          destination: test-queue
+          destination: test-queue-01
           contentType: application/json
   rabbitmq:
     host: ${RABBITMQ_HOST}
